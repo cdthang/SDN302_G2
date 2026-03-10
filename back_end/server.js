@@ -1,11 +1,14 @@
-require("dotenv").config();
-const express = require("express");
-const connectDB = require("./config/db");
+import dotenv from "dotenv";
+import express from "express";
+import connectDB from "./config/db.js";
+import postRoutes from "./routes/post.routes.js";
+
+dotenv.config();
 
 const app = express();
 
 app.use(express.json());
-
+app.use("/api/posts", postRoutes);
 // Connect DB
 connectDB();
 
