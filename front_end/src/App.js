@@ -1,9 +1,13 @@
 import logo from './logo.svg';
 import './App.css';
+import Posts from './pages/Posts';
+import CreatePost from './pages/CreatePost';
 
 function App() {
   return (
     <div className="App">
+      <Posts />
+      <CreatePost />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

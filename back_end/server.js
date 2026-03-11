@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
-// Connect DB
+
 connectDB();
 
 app.get("/", (req, res) => {
