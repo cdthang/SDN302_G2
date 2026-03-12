@@ -56,15 +56,20 @@ export default function Login() {
             Đăng Nhập
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-slate-600">
-          Chưa có tài khoản?{" "}
+        <div className="flex justify-between items-center mt-4 text-sm">
+          <Link
+            to="/forgot-password"
+            className="text-slate-600 hover:text-emerald-600 font-medium"
+          >
+            Quên mật khẩu?
+          </Link>
           <Link
             to="/register"
             className="text-emerald-600 font-bold hover:underline"
           >
             Tạo mới
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
