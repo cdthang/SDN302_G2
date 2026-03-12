@@ -1,15 +1,16 @@
-import dotenv from "dotenv";
 import express from "express";
+import dotenv from "dotenv";
+
 import connectDB from "./config/db.js";
 import postRoutes from "./routes/post.routes.js";
+import charityRoutes from "./routes/charity.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
-app.use("/api/auth", authRoutes);
-app.use("/api/posts", postRoutes);
 
 connectDB();
 
@@ -17,5 +18,9 @@ app.get("/", (req, res) => {
   res.send("GreenLoop API Running");
 });
 
-const PORT = process.env.PORT || 8000;
+app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/charities", charityRoutes);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

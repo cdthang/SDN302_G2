@@ -1,10 +1,26 @@
 import Post from "../models/post.models.js";
+import { classifyPost } from "../services/aiService.service.js";
 
 export const createPost = async (req, res) => {
   try {
-    const post = new Post(req.body);
+    const { title, description, images, userId, price } = req.body;
+
+    const aiResult = await classifyPost(title, description);
+
+    const post = new Post({
+      title,
+      description,
+      images,
+      userId,
+      category: aiResult.category,
+      tags: aiResult.tags,
+      status: "Pending"
+    });
+
     await post.save();
+
     res.status(201).json(post);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

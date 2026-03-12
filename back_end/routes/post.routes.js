@@ -4,7 +4,7 @@ import { authMiddleware } from "../middleware/auth.js";
 import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
-router.post("/", authMiddleware, upload.single("image"), createPost);
+router.post("/", authMiddleware, upload.array("images", 5), createPost);
 router.get("/", authMiddleware, getPosts);
 router.get("/:id", authMiddleware, getPostById);
 router.put("/:id", authMiddleware, updatePost);
