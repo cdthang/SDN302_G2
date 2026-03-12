@@ -4,6 +4,11 @@ const API_KEY = process.env.AI_STUDIO_API_KEY || process.env.OPENAI_API_KEY;
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
+const extractJSON = (text) => {
+  const match = text.match(/\{[\s\S]*\}/);
+  return match ? match[0] : "{}";
+};
+
 const callGeminiAPI = async (prompt) => {
   try {
     const res = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
@@ -28,7 +33,7 @@ const callGeminiAPI = async (prompt) => {
 
     return content;
   } catch (error) {
-    console.error("Lỗi khi gọi Gemini API:", error.message);
+    console.error("Gemini API error:", error.message);
     return "{}";
   }
 };
@@ -36,45 +41,57 @@ const callGeminiAPI = async (prompt) => {
 export const classifyPost = async (title, description) => {
   const prompt = `
   Phân loại bài đăng vào danh mục phù hợp và gợi ý tags liên quan.
-  Dữ liệu:
-  - Tiêu đề: ${title}
-  - Mô tả: ${description}
 
-  Trả về đúng định dạng JSON:
+  Tiêu đề: ${title}
+  Mô tả: ${description}
+
+  Chỉ trả về JSON:
+
   {
-    "category": "Tên danh mục (ví dụ: Electronics, Clothing, Furniture, ...)",
-    "tags": ["tag1", "tag2", "tag3"]
+    "category": "Electronics | Clothing | Furniture | Books | Others",
+    "tags": ["tag1","tag2","tag3"]
   }
   `;
 
   const responseText = await callGeminiAPI(prompt);
 
   try {
-    return JSON.parse(responseText);
+    const clean = extractJSON(responseText);
+
+    return JSON.parse(clean);
   } catch (e) {
-    console.warn("Không thể parse JSON từ AI:", responseText);
-    return { category: "Uncategorized", tags: [] };
+    console.warn("AI JSON parse error:", responseText);
+
+    return {
+      category: "Uncategorized",
+      tags: [],
+    };
   }
 };
 
 export const summarizeCharity = async (description) => {
   const prompt = `
-  Tóm tắt ngắn gọn và tạo highlight message cảm xúc cho chiến dịch từ thiện sau:
+  Tóm tắt chiến dịch từ thiện sau và tạo highlight message:
+
   ${description}
 
-  Trả về đúng định dạng JSON:
+  Chỉ trả về JSON:
+
   {
-    "shortDescription": "Tóm tắt khoảng 1-2 câu",
-    "highlightMessage": "Một thông điệp nổi bật truyền cảm hứng"
+    "shortDescription": "1-2 câu tóm tắt",
+    "highlightMessage": "Thông điệp truyền cảm hứng"
   }
   `;
 
   const responseText = await callGeminiAPI(prompt);
 
   try {
-    return JSON.parse(responseText);
+    const clean = extractJSON(responseText);
+
+    return JSON.parse(clean);
   } catch (e) {
-    console.warn("Không thể parse JSON từ AI:", responseText);
+    console.warn("AI JSON parse error:", responseText);
+
     return {
       shortDescription: "Không có mô tả ngắn.",
       highlightMessage: "Không có thông điệp nổi bật.",

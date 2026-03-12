@@ -1,5 +1,5 @@
-import Charity from "../models/Charity.js";
-import { summarizeCharity } from "../services/aiService.js";
+import Charity from "../models/charity.model.js";
+import { summarizeCharity } from "../services/aiService.service.js";
 
 export const createCharity = async (req, res) => {
   try {

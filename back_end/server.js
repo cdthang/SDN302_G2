@@ -1,8 +1,12 @@
-require("dotenv").config();
-const express = require("express");
-const connectDB = require("./config/db");
-import postRoutes from "./routes/postRoutes.js";
-import charityRoutes from "./routes/charityRoutes.js";
+import express from "express";
+import dotenv from "dotenv";
+
+import connectDB from "./config/db.js";
+import postRoutes from "./routes/post.routes.js";
+import charityRoutes from "./routes/charity.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+
+dotenv.config();
 
 const app = express();
 
@@ -14,6 +18,7 @@ app.get("/", (req, res) => {
   res.send("GreenLoop API Running");
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/charities", charityRoutes);
 
