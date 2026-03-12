@@ -11,47 +11,37 @@ export const register = async (req, res) => {
     const user = new User({
       username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
-
     await user.save();
 
-    res.status(201).json({ message: "User registered" });
-
+    res.status(201).json({ message: "Đăng ký thành công" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
 export const login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user)
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Wrong password" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Sai mật khẩu" });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.json({
       token,
-      user
+      user: { id: user._id, username: user.username, email: user.email },
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
