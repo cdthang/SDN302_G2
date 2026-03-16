@@ -12,7 +12,7 @@ export default function ForgotPassword() {
   const handleSendCode = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/forgot-password", {
+      await axios.post("http://localhost:8000/api/auth/forgot-password", {
         email,
       });
       setStep(2);
@@ -25,7 +25,7 @@ export default function ForgotPassword() {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/reset-password", {
+      await axios.post("http://localhost:8000/api/auth/reset-password", {
         email,
         otp,
         newPassword,
