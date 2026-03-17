@@ -1,6 +1,6 @@
 import Charity from "../models/charity.model.js";
 import Donation from "../models/donation.model.js";
-import { summarizeCharity } from "../services/aiService.service.js";
+import { summarizeCharity, generateCharityDescription } from "../services/aiService.service.js";
 
 export const createCharity = async (req, res) => {
   try {
@@ -149,6 +149,20 @@ export const deleteCharity = async (req, res) => {
     await Donation.deleteMany({ charityId: id });
     
     res.status(200).json({ message: "Charity and associated donations deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const generateAIContent = async (req, res) => {
+  try {
+    const { title } = req.body;
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+
+    const description = await generateCharityDescription(title);
+    res.status(200).json({ description });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

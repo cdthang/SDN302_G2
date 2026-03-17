@@ -7,6 +7,7 @@ export default function CharityManagement() {
   const [showModal, setShowModal] = useState(false);
   const [editingCharity, setEditingCharity] = useState(null);
   const [form, setForm] = useState({ title: "", description: "", goalAmount: "" });
+  const [aiLoading, setAiLoading] = useState(false);
 
   const token = localStorage.getItem("token");
   const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -21,6 +22,26 @@ export default function CharityManagement() {
       setCharities(res.data);
     } catch (err) {
       console.error("Error fetching charities", err);
+    }
+  };
+
+  const handleAIGenerate = async () => {
+    if (!form.title || form.description) return; // Only gen if title exists and description is empty
+
+    setAiLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/charities/generate-ai-content",
+        { title: form.title },
+        config
+      );
+      if (res.data.description) {
+        setForm(prev => ({ ...prev, description: res.data.description }));
+      }
+    } catch (err) {
+      console.error("AI Generation error", err);
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -119,7 +140,7 @@ export default function CharityManagement() {
       {showModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
-            <h3 className="text-2xl font-black mb-6">{editingCharity ? "Sửa chiến dịch" : "Thêm chiến định mớil"}</h3>
+            <h3 className="text-2xl font-black mb-6">{editingCharity ? "Sửa chiến dịch" : "Thêm chiến dịch mới"}</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Tiêu đề</label>
@@ -128,17 +149,22 @@ export default function CharityManagement() {
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  onBlur={handleAIGenerate}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  placeholder="Nhập tiêu đề chiến dịch..."
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Mô tả</label>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Mô tả {aiLoading && <span className="text-emerald-600 animate-pulse text-xs ml-2">(AI đang soạn thảo...)</span>}
+                </label>
                 <textarea
                   required
                   rows="4"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
+                  placeholder={aiLoading ? "AI đang tạo nội dung cho bạn..." : "Mô tả chi tiết chiến dịch..."}
+                  className={`w-full px-4 py-3 rounded-xl border ${aiLoading ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200'} focus:ring-2 focus:ring-emerald-500 outline-none resize-none transition-all`}
                 ></textarea>
               </div>
               <div>

@@ -1,62 +1,86 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-export default function Header() {
+const Header = () => {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
+
+  useEffect(() => {
+    // Check for user in localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/login');
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white">
-            R
-          </div>
-          <div>
-            <p className="text-lg font-bold">ReUni</p>
-            <p className="text-xs text-slate-500">Thu mua đồ cũ cho sinh viên</p>
-          </div>
-        </Link>
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-3xl">🌱</span>
+            <span className="text-2xl font-black text-gray-900 tracking-tight">
+              GreenLoop
+            </span>
+          </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Danh mục</Link>
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Quy trình</Link>
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Giá tham khảo</Link>
-          <Link to="/charities" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700">Từ thiện</Link>
-          {user?.role === "admin" && (
-            <Link to="/admin" className="text-sm font-semibold text-slate-900 hover:text-emerald-600">Admin</Link>
-          )}
-        </nav>
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+              Trang Chủ
+            </Link>
+            <Link to="/charities" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+              Chiến Dịch
+            </Link>
+            <Link to="/posts" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+              Chia Sẻ Đồ
+            </Link>
+          </nav>
 
-        <div className="flex items-center gap-3">
-          {user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-slate-700 hidden sm:block">Chào, {user.full_name || user.username}</span>
-              <button 
-                onClick={handleLogout}
-                className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 transition"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
-                Đăng nhập
-              </Link>
-              <button className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
-                Bán đồ ngay
-              </button>
-            </>
-          )}
+          {/* Auth Actions */}
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-bold text-gray-900">{user.name || user.email}</span>
+                  <span className="text-xs text-gray-500 capitalize">{user.role}</span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="bg-gray-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-gray-800 transition shadow-sm"
+                >
+                  Đăng Xuất
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="text-gray-900 font-bold px-4 py-2 hover:text-emerald-600 transition"
+                >
+                  Đăng Nhập
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-700 transition shadow-sm shadow-emerald-100"
+                >
+                  Đăng Ký
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
   );
-}
+};
+
+export default Header;

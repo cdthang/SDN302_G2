@@ -8,6 +8,5 @@ router.post("/", authMiddleware, upload.array("images", 5), createPost);
 router.get("/", authMiddleware, getPosts);
 router.get("/:id", authMiddleware, getPostById);
 router.put("/:id", authMiddleware, updatePost);
-router.delete("/:id", authMiddleware, isAdmin, deletePost);
 router.patch("/:id/approve", authMiddleware, isAdmin, approvePost);
 export default router;

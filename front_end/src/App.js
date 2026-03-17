@@ -13,31 +13,38 @@ import CreateCharity from "./pages/CreateCharity";
 import CharityDetail from "./pages/CharityDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
+import Header from "./components/Header";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<StudentUsedGoodsHomepage />} />
-
-        <Route path="/posts" element={<Posts />} />
-        <Route path="/create-post" element={<CreatePost />} />
-        
-        <Route path="/charities" element={<Charities />} />
-        <Route path="/create-charity" element={<CreateCharity />} />
-        <Route path="/charity/:id" element={<CharityDetail />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
         <Route 
-          path="/admin" 
+          path="/admin/*" 
           element={
             <AdminRoute>
               <AdminDashboard />
             </AdminRoute>
           } 
+        />
+        <Route
+          path="*"
+          element={
+            <>
+              <Header />
+              <Routes>
+                <Route path="/" element={<StudentUsedGoodsHomepage />} />
+                <Route path="/posts" element={<Posts />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/charities" element={<Charities />} />
+                <Route path="/create-charity" element={<CreateCharity />} />
+                <Route path="/charity/:id" element={<CharityDetail />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+              </Routes>
+            </>
+          }
         />
       </Routes>
     </Router>
