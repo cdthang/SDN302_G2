@@ -5,8 +5,8 @@ import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
 router.post("/", authMiddleware, upload.array("images", 5), createPost);
-router.get("/", authMiddleware, getPosts);
-router.get("/:id", authMiddleware, getPostById);
+router.get("/", getPosts);
+router.get("/:id", getPostById);
 router.put("/:id", authMiddleware, updatePost);
 router.delete("/:id", authMiddleware, deletePost);
 router.patch("/:id/approve", authMiddleware, approvePost);

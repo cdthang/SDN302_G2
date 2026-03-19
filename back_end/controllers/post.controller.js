@@ -14,7 +14,8 @@ export const createPost = async (req, res) => {
       userId,
       category: aiResult.category,
       tags: aiResult.tags,
-      status: "Pending"
+      status: "Pending",
+      price,
     });
 
     await post.save();

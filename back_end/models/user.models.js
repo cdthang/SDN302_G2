@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       default: "unverified",
     },
 
-    // Các trường phục vụ xác thực OTP
+   
     otp: { type: String },
     otpExpiry: { type: Date },
   },

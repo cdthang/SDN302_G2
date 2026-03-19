@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentUsedGoodsHomepage() {
+  const navigate = useNavigate();
   const categories = [
     { name: "Sách & giáo trình", icon: "📚" },
     { name: "Laptop & phụ kiện", icon: "💻" },
@@ -10,32 +13,27 @@ export default function StudentUsedGoodsHomepage() {
     { name: "Đồ dùng học tập", icon: "📝" },
   ];
 
-  const products = [
-    {
-      title: "Giáo trình Kinh tế vi mô",
-      price: "120.000đ",
-      campus: "ĐH Kinh tế",
-      status: "Còn tốt",
-      image:
-        "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      title: "Laptop học tập Lenovo",
-      price: "5.200.000đ",
-      campus: "Bách Khoa",
-      status: "Đã kiểm tra",
-      image:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
-    },
-    {
-      title: "Tai nghe Bluetooth",
-      price: "350.000đ",
-      campus: "ĐH Ngoại thương",
-      status: "Like new",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=900&q=80",
-    },
-  ];
+  const [posts, setPosts] = useState([]);
+  const [charities, setCharities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [selectedPost, setSelectedPost] = useState(null);
+
+  const currencyFormatter = useMemo(
+    () => new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }),
+    [],
+  );
+
+  const formatCurrency = (value) => {
+    const numericValue = Number(value);
+    if (Number.isNaN(numericValue)) {
+      return "Liên hệ";
+    }
+    return currencyFormatter.format(numericValue);
+  };
+
+  const fallbackPostImage =
+    "https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80";
 
   const steps = [
     {
@@ -51,6 +49,54 @@ export default function StudentUsedGoodsHomepage() {
       desc: "Xác nhận tại trường hoặc ký túc xá, thanh toán ngay sau khi kiểm tra.",
     },
   ];
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setLoadError("");
+
+        const [postsResponse, charitiesResponse] = await Promise.all([
+          axios.get("/api/posts"),
+          axios.get("/api/charities"),
+        ]);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setPosts(Array.isArray(postsResponse.data) ? postsResponse.data : []);
+        setCharities(
+          Array.isArray(charitiesResponse.data) ? charitiesResponse.data : [],
+        );
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+        setLoadError("Không thể tải dữ liệu từ máy chủ. Vui lòng thử lại sau.");
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleOpenPost = (post) => {
+    setSelectedPost(post);
+  };
+
+  const handleClosePost = () => {
+    setSelectedPost(null);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -69,18 +115,19 @@ export default function StudentUsedGoodsHomepage() {
           <nav className="hidden items-center gap-8 md:flex">
             <a href="#danh-muc" className="text-sm text-slate-600 hover:text-slate-900">Danh mục</a>
             <a href="#quy-trinh" className="text-sm text-slate-600 hover:text-slate-900">Quy trình</a>
-            <a href="#san-pham" className="text-sm text-slate-600 hover:text-slate-900">Giá tham khảo</a>
+            <a href="#posts" className="text-sm text-slate-600 hover:text-slate-900">Bài đăng</a>
+            <a href="#charities" className="text-sm text-slate-600 hover:text-slate-900">Từ thiện</a>
             <a href="#faq" className="text-sm text-slate-600 hover:text-slate-900">FAQ</a>
           </nav>
 
           <div className="flex items-center gap-3">
-            <button className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
+            <button onClick={() => navigate("/login")} className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
               Đăng nhập
             </button>
-            <button className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
-              Bán đồ ngay
+            <button onClick={() => navigate("/create-post")} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
+              Đăng bán / Đổi đồ
             </button>
-          </div>
+          </div>  
         </div>
       </header>
 
@@ -92,19 +139,25 @@ export default function StudentUsedGoodsHomepage() {
               Thu mua tận nơi • Định giá nhanh • Ưu tiên sinh viên
             </div>
             <h1 className="max-w-xl text-4xl font-black leading-tight tracking-tight md:text-6xl">
-              Biến đồ cũ thành <span className="text-emerald-600">tiền mặt</span> ngay tại trường
+              Bán đồ cũ, đổi đồ mới, và <span className="text-emerald-600">góp sức từ thiện</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
-              Nền tảng thu mua đồ cũ dành riêng cho sinh viên: sách, laptop, đồ điện tử,
-              nội thất phòng trọ và nhiều hơn nữa. Nhanh, minh bạch, không mặc cả mệt mỏi.
+              Nền tảng dành cho sinh viên để bán hoặc đổi đồ đã qua sử dụng, đồng thời hỗ trợ
+              các chiến dịch từ thiện. Nhanh, minh bạch và thân thiện với cộng đồng.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <button className="rounded-2xl bg-slate-900 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5">
-                Đăng món đồ cần bán
+              <button
+                onClick={() => navigate("/create-post")}
+                className="rounded-2xl bg-slate-900 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5"
+              >
+                Đăng bán hoặc đổi ngay
               </button>
-              <button className="rounded-2xl border border-slate-300 bg-white px-6 py-4 text-base font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50">
-                Xem giá thu mua
+              <button
+                onClick={() => navigate("/posts")}
+                className="rounded-2xl border border-slate-300 bg-white px-6 py-4 text-base font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
+              >
+                Khám phá đồ cũ
               </button>
             </div>
 
@@ -143,36 +196,6 @@ export default function StudentUsedGoodsHomepage() {
         </div>
       </section>
 
-      <section id="danh-muc" className="mx-auto max-w-7xl px-6 py-16">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Danh mục phổ biến</p>
-            <h2 className="mt-2 text-3xl font-black md:text-4xl">Chúng tôi đang thu mua gì?</h2>
-          </div>
-          <button className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
-            Xem tất cả
-          </button>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((item) => (
-            <div
-              key={item.name}
-              className="group rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                {item.icon}
-              </div>
-              <h3 className="mt-5 text-xl font-bold">{item.name}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Thu mua nhanh, có hỗ trợ kiểm tra tình trạng và gợi ý mức giá phù hợp với sinh viên.
-              </p>
-              <div className="mt-5 text-sm font-semibold text-emerald-600">Xem giá tham khảo →</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section id="quy-trinh" className="bg-slate-900 py-16 text-white">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
@@ -194,41 +217,169 @@ export default function StudentUsedGoodsHomepage() {
         </div>
       </section>
 
-      <section id="san-pham" className="mx-auto max-w-7xl px-6 py-16">
-        <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Mức giá tham khảo</p>
-          <h2 className="mt-2 text-3xl font-black md:text-4xl">Một số món đồ sinh viên bán nhiều</h2>
+      <section id="posts" className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Bài đăng mới</p>
+            <h2 className="mt-2 text-3xl font-black md:text-4xl">Đồ cũ đang chờ bạn</h2>
+            <p className="mt-2 text-sm text-slate-500">Hiển thị 3 bài chính, kéo ngang để xem thêm.</p>
+          </div>
+          <button
+            onClick={() => navigate("/posts")}
+            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+          >
+            Xem tất cả bài đăng
+          </button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {products.map((product) => (
-            <div key={product.title} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
-              <img src={product.image} alt={product.title} className="h-60 w-full object-cover" />
-              <div className="p-5">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    {product.status}
-                  </span>
-                  <span className="text-sm text-slate-500">{product.campus}</span>
+        {loadError ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
+            {loadError}
+          </div>
+        ) : (
+          <div className="-mx-6 overflow-hidden md:mx-0">
+            <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 md:px-0">
+              {isLoading && posts.length === 0 ? (
+                <div className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
+                  Đang tải dữ liệu bài đăng...
                 </div>
-                <h3 className="text-xl font-bold">{product.title}</h3>
-                <p className="mt-3 text-2xl font-black text-slate-900">{product.price}</p>
-                <button className="mt-5 w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95">
-                  Bán món tương tự
-                </button>
+              ) : posts.length === 0 ? (
+                <div className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
+                  Chưa có bài đăng nào.
+                </div>
+              ) : (
+                posts.map((post) => (
+                  <button
+                    key={post._id || post.title}
+                    type="button"
+                    onClick={() => handleOpenPost(post)}
+                    className="snap-start text-left"
+                  >
+                    <div className="min-w-[260px] overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg sm:min-w-[320px] md:min-w-[360px]">
+                      <img
+                        src={post.images?.[0] || fallbackPostImage}
+                        alt={post.title}
+                        className="h-56 w-full object-cover"
+                      />
+                      <div className="p-5">
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                            {post.status || "Pending"}
+                          </span>
+                          <span className="text-sm text-slate-500">{post.category || "Khác"}</span>
+                        </div>
+                        <h3 className="text-xl font-bold">{post.title}</h3>
+                        <p className="mt-3 text-2xl font-black text-slate-900">{formatCurrency(post.price)}</p>
+                        <p className="mt-3 text-sm text-emerald-600">Xem chi tiết →</p>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section id="danh-muc" className="mx-auto max-w-7xl px-6 pb-16">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Danh mục phổ biến</p>
+            <h2 className="mt-2 text-3xl font-black md:text-4xl">Mua, bán và đổi đồ theo danh mục</h2>
+          </div>
+          <button className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
+            Xem danh mục
+          </button>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((item) => (
+            <div
+              key={item.name}
+              className="group rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+                {item.icon}
               </div>
+              <h3 className="mt-5 text-xl font-bold">{item.name}</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-500">
+                Định giá minh bạch, hỗ trợ đổi đồ hoặc bán nhanh ngay trong ngày.
+              </p>
+              <div className="mt-5 text-sm font-semibold text-emerald-600">Tìm đồ phù hợp →</div>
             </div>
           ))}
         </div>
+      </section>
+
+      <section id="charities" className="mx-auto max-w-7xl px-6 pb-16">
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Chiến dịch từ thiện</p>
+          <h2 className="mt-2 text-3xl font-black md:text-4xl">Đồ cũ được trao đi đúng nơi</h2>
+        </div>
+
+        {loadError ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
+            {loadError}
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {isLoading && charities.length === 0 ? (
+              <div className="col-span-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
+                Đang tải dữ liệu chiến dịch...
+              </div>
+            ) : charities.length === 0 ? (
+              <div className="col-span-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
+                Chưa có chiến dịch nào.
+              </div>
+            ) : (
+              charities.map((charity) => {
+                const goal = Number(charity.goalAmount) || 0;
+                const current = Number(charity.currentAmount) || 0;
+                const progress = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+
+                return (
+                  <div key={charity._id || charity.title} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        {charity.status || "active"}
+                      </span>
+                      <span className="text-xs uppercase tracking-[0.2em] text-slate-400">{progress}%</span>
+                    </div>
+                    <h3 className="mt-4 text-2xl font-bold">{charity.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{charity.shortDescription || charity.description}</p>
+                    {charity.highlightMessage ? (
+                      <p className="mt-3 text-sm font-semibold text-emerald-600">{charity.highlightMessage}</p>
+                    ) : null}
+                    <div className="mt-5">
+                      <div className="h-2 w-full rounded-full bg-slate-100">
+                        <div
+                          className="h-2 rounded-full bg-emerald-500"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
+                        <span>{formatCurrency(current)}</span>
+                        <span>Mục tiêu {formatCurrency(goal)}</span>
+                      </div>
+                      <button className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95">
+                        Ủng hộ chiến dịch này
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-16">
         <div className="grid gap-6 rounded-[2rem] bg-gradient-to-r from-emerald-500 to-teal-500 p-8 text-white md:grid-cols-[1.4fr_0.8fr] md:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">Ưu đãi cho tân sinh viên</p>
-            <h2 className="mt-3 text-3xl font-black md:text-4xl">Bán combo đồ cũ, nhận thêm thưởng</h2>
+            <h2 className="mt-3 text-3xl font-black md:text-4xl">Đăng nhiều đồ cũ, nhận hỗ trợ vận chuyển</h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-white/90">
-              Bán từ 3 món trở lên trong cùng một lần đăng ký để được ưu tiên lịch thu mua và cộng thêm ưu đãi vận chuyển.
+              Đăng từ 3 món trở lên để được ưu tiên lịch giao dịch và hỗ trợ vận chuyển tại ký túc xá.
             </p>
           </div>
           <div className="rounded-3xl bg-white/15 p-6 backdrop-blur">
@@ -238,7 +389,7 @@ export default function StudentUsedGoodsHomepage() {
               className="mt-4 w-full rounded-2xl border border-white/20 bg-white/90 px-4 py-3 text-slate-900 outline-none"
             />
             <button className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white">
-              Nhận báo giá miễn phí
+              Đăng ký hỗ trợ
             </button>
           </div>
         </div>
@@ -268,7 +419,7 @@ export default function StudentUsedGoodsHomepage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-lg font-bold">ReUni</p>
-            <p className="mt-1 text-sm text-slate-500">Giải pháp thu mua đồ cũ tiện lợi cho cộng đồng sinh viên.</p>
+            <p className="mt-1 text-sm text-slate-500">Nền tảng bán, đổi đồ cũ và hỗ trợ các hoạt động từ thiện.</p>
           </div>
           <div className="flex flex-wrap gap-5 text-sm text-slate-500">
             <a href="#">Chính sách</a>
@@ -278,6 +429,62 @@ export default function StudentUsedGoodsHomepage() {
           </div>
         </div>
       </footer>
+      {selectedPost ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-6 py-10">
+          <div className="w-full max-w-3xl rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-emerald-600">Chi tiết bài đăng</p>
+                <h3 className="mt-2 text-2xl font-bold text-slate-900">{selectedPost.title}</h3>
+                <p className="mt-2 text-lg font-semibold text-slate-700">{formatCurrency(selectedPost.price)}</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleClosePost}
+                className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-500 hover:text-slate-700"
+              >
+                Đóng
+              </button>
+            </div>
+            <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_1fr]">
+              <img
+                src={selectedPost.images?.[0] || fallbackPostImage}
+                alt={selectedPost.title}
+                className="h-64 w-full rounded-2xl object-cover"
+              />
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    {selectedPost.status || "Pending"}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {selectedPost.category || "Khác"}
+                  </span>
+                </div>
+                <p className="text-sm leading-6 text-slate-600">
+                  {selectedPost.description || "Chưa có mô tả chi tiết."}
+                </p>
+                {Array.isArray(selectedPost.tags) && selectedPost.tags.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPost.tags.map((tag) => (
+                      <span key={tag} className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => navigate("/create-post")}
+                  className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white"
+                >
+                  Đăng món đồ tương tự
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

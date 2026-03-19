@@ -1,4 +1,4 @@
-// front_end/src/pages/Login.js
+
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -14,10 +14,10 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "http://localhost:8000/api/auth/login",
         formData,
       );
-      localStorage.setItem("token", res.data.token); // Lưu token để dùng cho các tính năng khác
+      localStorage.setItem("token", res.data.token); 
       localStorage.setItem("user", JSON.stringify(res.data.user));
       alert("Đăng nhập thành công!");
       navigate("/");
