@@ -1,9 +1,12 @@
+
 import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function StudentUsedGoodsHomepage() {
   const navigate = useNavigate();
+
   const categories = [
     { name: "Sách & giáo trình", icon: "📚" },
     { name: "Laptop & phụ kiện", icon: "💻" },
@@ -68,9 +71,10 @@ export default function StudentUsedGoodsHomepage() {
         }
 
         setPosts(Array.isArray(postsResponse.data) ? postsResponse.data : []);
-        setCharities(
-          Array.isArray(charitiesResponse.data) ? charitiesResponse.data : [],
-        );
+        const charitiesData = Array.isArray(charitiesResponse.data)
+          ? charitiesResponse.data
+          : [];
+        setCharities(charitiesData.slice(0, 3));
       } catch (error) {
         if (!isMounted) {
           return;
@@ -100,36 +104,8 @@ export default function StudentUsedGoodsHomepage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white">
-              R
-            </div>
-            <div>
-              <p className="text-lg font-bold">ReUni</p>
-              <p className="text-xs text-slate-500">Thu mua đồ cũ cho sinh viên</p>
-            </div>
-          </div>
 
-          <nav className="hidden items-center gap-8 md:flex">
-            <a href="#danh-muc" className="text-sm text-slate-600 hover:text-slate-900">Danh mục</a>
-            <a href="#quy-trinh" className="text-sm text-slate-600 hover:text-slate-900">Quy trình</a>
-            <a href="#posts" className="text-sm text-slate-600 hover:text-slate-900">Bài đăng</a>
-            <a href="#charities" className="text-sm text-slate-600 hover:text-slate-900">Từ thiện</a>
-            <a href="#faq" className="text-sm text-slate-600 hover:text-slate-900">FAQ</a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/login")} className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
-              Đăng nhập
-            </button>
-            <button onClick={() => navigate("/create-post")} className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
-              Đăng bán / Đổi đồ
-            </button>
-          </div>  
-        </div>
-      </header>
+      <Header />
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 via-white to-sky-100" />
@@ -311,69 +287,66 @@ export default function StudentUsedGoodsHomepage() {
         </div>
       </section>
 
-      <section id="charities" className="mx-auto max-w-7xl px-6 pb-16">
-        <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Chiến dịch từ thiện</p>
-          <h2 className="mt-2 text-3xl font-black md:text-4xl">Đồ cũ được trao đi đúng nơi</h2>
-        </div>
 
-        {loadError ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700">
-            {loadError}
+      <section id="tu-thien" className="bg-emerald-50 py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Hoạt động cộng đồng</p>
+              <h2 className="mt-2 text-3xl font-black md:text-4xl">Chiến dịch từ thiện nổi bật</h2>
+            </div>
+            <Link to="/charities" className="hidden rounded-xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 md:block">
+              Xem tất cả chiến dịch
+            </Link>
           </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {isLoading && charities.length === 0 ? (
-              <div className="col-span-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
-                Đang tải dữ liệu chiến dịch...
-              </div>
-            ) : charities.length === 0 ? (
-              <div className="col-span-full rounded-2xl border border-slate-200 bg-white px-5 py-8 text-center text-sm text-slate-500">
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {charities.length > 0 ? charities.map((charity) => {
+              const pct = charity.goalAmount > 0 ? Math.min(100, Math.round(((charity.currentAmount || 0) / charity.goalAmount) * 100)) : 0;
+              return (
+                <div key={charity._id} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 flex flex-col hover:shadow-lg transition-shadow">
+                  <div className="p-6 flex-grow">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${charity.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
+                        {charity.status === 'active' ? 'Đang diễn ra' : 'Đã đóng'}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-bold line-clamp-2 mb-2">{charity.title}</h3>
+                    <p className="text-sm text-slate-600 line-clamp-3 mb-4">{charity.shortDescription || charity.description}</p>
+                    {charity.highlightMessage && (
+                      <p className="text-sm italic text-amber-700 bg-amber-50 p-2 rounded border-l-2 border-amber-400">"{charity.highlightMessage}"</p>
+                    )}
+                  </div>
+                  <div className="bg-slate-50 p-6 border-t border-slate-100">
+                    <div className="flex justify-between text-sm font-medium mb-2">
+                      <span className="text-slate-600">Đã góp <span className="text-emerald-600 font-bold">{Number(charity.currentAmount || 0).toLocaleString()}đ</span></span>
+                      <span className="text-slate-500">/{Number(charity.goalAmount || 0).toLocaleString()}đ</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 mb-4 overflow-hidden">
+                      <div className="bg-emerald-500 h-2 rounded-full flex relative" style={{ width: `${pct}%` }}></div>
+                    </div>
+                    <Link to={`/charity/${charity._id}`} className="mt-2 block text-center rounded-xl bg-white border border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-600 transition hover:bg-emerald-50 w-full">
+                      Ủng hộ ngay & Xem chi tiết
+                    </Link>
+                  </div>
+                </div>
+              );
+            }) : (
+              <div className="col-span-3 text-center py-12 text-slate-500 bg-white rounded-3xl border border-slate-200">
                 Chưa có chiến dịch nào.
               </div>
-            ) : (
-              charities.map((charity) => {
-                const goal = Number(charity.goalAmount) || 0;
-                const current = Number(charity.currentAmount) || 0;
-                const progress = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
-
-                return (
-                  <div key={charity._id || charity.title} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        {charity.status || "active"}
-                      </span>
-                      <span className="text-xs uppercase tracking-[0.2em] text-slate-400">{progress}%</span>
-                    </div>
-                    <h3 className="mt-4 text-2xl font-bold">{charity.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{charity.shortDescription || charity.description}</p>
-                    {charity.highlightMessage ? (
-                      <p className="mt-3 text-sm font-semibold text-emerald-600">{charity.highlightMessage}</p>
-                    ) : null}
-                    <div className="mt-5">
-                      <div className="h-2 w-full rounded-full bg-slate-100">
-                        <div
-                          className="h-2 rounded-full bg-emerald-500"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                      <div className="mt-3 flex items-center justify-between text-sm text-slate-500">
-                        <span>{formatCurrency(current)}</span>
-                        <span>Mục tiêu {formatCurrency(goal)}</span>
-                      </div>
-                      <button className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-95">
-                        Ủng hộ chiến dịch này
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
             )}
           </div>
-        )}
+          
+          <div className="mt-8 text-center md:hidden">
+            <Link to="/charities" className="rounded-xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 inline-block w-full">
+              Xem tất cả chiến dịch
+            </Link>
+          </div>
+        </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16">
+      <section className="mx-auto max-w-7xl px-6 pb-16 pt-16 mt-16">
         <div className="grid gap-6 rounded-[2rem] bg-gradient-to-r from-emerald-500 to-teal-500 p-8 text-white md:grid-cols-[1.4fr_0.8fr] md:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">Ưu đãi cho tân sinh viên</p>

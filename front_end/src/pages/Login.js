@@ -17,10 +17,18 @@ export default function Login() {
         "http://localhost:8000/api/auth/login",
         formData,
       );
-      localStorage.setItem("token", res.data.token); 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      const user = res.data.user;
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       alert("Đăng nhập thành công!");
-      navigate("/");
+      const userRole = String(user?.role || "").toLowerCase();
+      if (userRole === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       alert(
         "Lỗi đăng nhập: " + (error.response?.data?.message || "Sai thông tin"),

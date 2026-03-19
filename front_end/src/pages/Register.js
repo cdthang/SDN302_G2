@@ -21,7 +21,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      await axios.post("http://localhost:8000/api/auth/register", formData);
       alert("Mã xác nhận đã được gửi về email!");
       setStep(2);
     } catch (error) {
@@ -32,7 +32,7 @@ export default function Register() {
   const handleVerify = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/verify-account", {
+      await axios.post("http://localhost:8000/api/auth/verify-account", {
         email: formData.email,
         otp,
       });
