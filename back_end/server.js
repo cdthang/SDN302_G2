@@ -6,6 +6,9 @@ import connectDB from "./config/db.js";
 import postRoutes from "./routes/post.routes.js";
 import charityRoutes from "./routes/charity.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import reportRoutes from "./routes/report.routes.js";
+import transactionRoutes from "./routes/transaction.routes.js";
 
 dotenv.config();
 
@@ -17,6 +20,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 connectDB();
 
@@ -27,6 +31,9 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/charities", charityRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

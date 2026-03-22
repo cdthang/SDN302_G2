@@ -31,8 +31,12 @@ const postSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "approved", "sold"],
-    default: "Pending"
+    enum: ["pending", "approved", "rejected", "sold"],
+    default: "pending"
+  },
+  rejectReason: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

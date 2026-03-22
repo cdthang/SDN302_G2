@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema(
       enum: ["unverified", "active", "banned"],
       default: "unverified",
     },
+    postCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
 
    
     otp: { type: String },

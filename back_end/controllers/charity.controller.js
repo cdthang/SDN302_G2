@@ -59,7 +59,7 @@ export const getCharityWithDonations = async (req, res) => {
     const { id } = req.params;
     const charity = await Charity.findById(id);
     if (!charity) {
-      return res.status(404).json({ message: "Charity not found" });
+      return res.status(404).json({ message: "Không tìm thấy chiến dịch" });
     }
 
     const donations = await Donation.find({ charityId: id }).sort({ createdAt: -1 });
@@ -90,7 +90,7 @@ export const donateToCharity = async (req, res) => {
 
     const charity = await Charity.findById(id);
     if (!charity) {
-      return res.status(404).json({ message: "Charity not found" });
+      return res.status(404).json({ message: "Không tìm thấy chiến dịch" });
     }
 
     const donation = new Donation({
@@ -105,7 +105,7 @@ export const donateToCharity = async (req, res) => {
     charity.currentAmount = (charity.currentAmount || 0) + Number(amount);
     await charity.save();
 
-    res.status(201).json({ message: "Donation successful", donation, currentAmount: charity.currentAmount });
+    res.status(201).json({ message: "Ủng hộ thành công", donation, currentAmount: charity.currentAmount });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -118,7 +118,7 @@ export const updateCharity = async (req, res) => {
 
     const charity = await Charity.findById(id);
     if (!charity) {
-      return res.status(404).json({ message: "Charity not found" });
+      return res.status(404).json({ message: "Không tìm thấy chiến dịch" });
     }
 
     if (title) charity.title = title;
@@ -146,12 +146,12 @@ export const deleteCharity = async (req, res) => {
     const { id } = req.params;
     const charity = await Charity.findByIdAndDelete(id);
     if (!charity) {
-      return res.status(404).json({ message: "Charity not found" });
+      return res.status(404).json({ message: "Không tìm thấy chiến dịch" });
     }
     // Also delete associated donations
     await Donation.deleteMany({ charityId: id });
     
-    res.status(200).json({ message: "Charity and associated donations deleted successfully" });
+    res.status(200).json({ message: "Đã xóa chiến dịch và các khoản ủng hộ liên quan" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

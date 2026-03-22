@@ -13,6 +13,7 @@ export default function Register() {
   });
   const [step, setStep] = useState(1); // 1: Đăng ký, 2: Nhập OTP
   const [otp, setOtp] = useState("");
+  const [resendingOtp, setResendingOtp] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -40,6 +41,25 @@ export default function Register() {
       navigate("/login");
     } catch (error) {
       alert(error.response?.data?.message || "OTP sai hoặc hết hạn");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!formData.email) {
+      alert("Vui lòng nhập email trước");
+      return;
+    }
+
+    setResendingOtp(true);
+    try {
+      await axios.post("http://localhost:8000/api/auth/resend-verify-otp", {
+        email: formData.email,
+      });
+      alert("Đã gửi lại OTP. Vui lòng kiểm tra email.");
+    } catch (error) {
+      alert(error.response?.data?.message || "Không thể gửi lại OTP");
+    } finally {
+      setResendingOtp(false);
     }
   };
 
@@ -125,6 +145,14 @@ export default function Register() {
               className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:bg-emerald-700 transition"
             >
               Xác Nhận
+            </button>
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              disabled={resendingOtp}
+              className="w-full border border-slate-300 text-slate-700 font-semibold py-3 rounded-xl hover:bg-slate-50 transition disabled:opacity-60"
+            >
+              {resendingOtp ? "Đang gửi lại OTP..." : "Gửi lại OTP"}
             </button>
           </form>
         )}

@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import AdminSidebar from "./AdminSidebar";
 import CharityManagement from "./CharityManagement";
 import PostManagement from "./PostManagement";
+import AdminStats from "./AdminStats";
+import UserManagement from "./UserManagement";
+import ReportManagement from "./ReportManagement";
+import TransactionManagement from "./TransactionManagement";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("charity");
+  const [activeTab, setActiveTab] = useState("overview");
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -13,11 +17,12 @@ export default function AdminDashboard() {
 
       {/* Main Content Area */}
       <main className="flex-1 p-8 overflow-y-auto">
-        {activeTab === "charity" ? (
-          <CharityManagement />
-        ) : (
-          <PostManagement />
-        )}
+        {activeTab === "overview" && <AdminStats />}
+        {activeTab === "charity" && <CharityManagement />}
+        {activeTab === "post" && <PostManagement />}
+        {activeTab === "users" && <UserManagement />}
+        {activeTab === "reports" && <ReportManagement />}
+        {activeTab === "transactions" && <TransactionManagement />}
       </main>
     </div>
   );

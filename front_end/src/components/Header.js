@@ -25,10 +25,11 @@ export default function Header() {
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Danh mục</Link>
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Quy trình</Link>
-          <Link to="/" className="text-sm text-slate-600 hover:text-slate-900">Giá tham khảo</Link>
+          <Link to="/posts" className="text-sm text-slate-600 hover:text-slate-900">Marketplace</Link>
+          {user && <Link to="/my-posts" className="text-sm text-slate-600 hover:text-slate-900">My Posts</Link>}
+          {user && <Link to="/transactions" className="text-sm text-slate-600 hover:text-slate-900">Transactions</Link>}
           <Link to="/charities" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700">Từ thiện</Link>
+          {user && <Link to="/profile" className="text-sm text-slate-600 hover:text-slate-900">Profile</Link>}
           {user?.role === "admin" && (
             <Link to="/admin" className="text-sm font-semibold text-slate-900 hover:text-emerald-600">Admin</Link>
           )}
@@ -50,9 +51,9 @@ export default function Header() {
               <Link to="/login" className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
                 Đăng nhập
               </Link>
-              <button className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
+              <Link to="/create-post" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]">
                 Bán đồ ngay
-              </button>
+              </Link>
             </>
           )}
         </div>

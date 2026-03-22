@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutDashboard, Heart, MessageSquare, LogOut } from "lucide-react";
+import { LayoutDashboard, Heart, MessageSquare, LogOut, Users, Flag, CreditCard } from "lucide-react";
 
 export default function AdminSidebar({ activeTab, setActiveTab }) {
   const handleLogout = () => {
@@ -15,6 +15,14 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
       
       <nav className="space-y-2 flex-1">
         <button
+          onClick={() => setActiveTab("overview")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+            activeTab === "overview" ? "bg-emerald-600" : "hover:bg-slate-800"
+          }`}
+        >
+          <LayoutDashboard size={20} /> Overview
+        </button>
+        <button
           onClick={() => setActiveTab("charity")}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
             activeTab === "charity" ? "bg-emerald-600" : "hover:bg-slate-800"
@@ -29,6 +37,30 @@ export default function AdminSidebar({ activeTab, setActiveTab }) {
           }`}
         >
           <MessageSquare size={20} /> Posts
+        </button>
+        <button
+          onClick={() => setActiveTab("users")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+            activeTab === "users" ? "bg-emerald-600" : "hover:bg-slate-800"
+          }`}
+        >
+          <Users size={20} /> Users
+        </button>
+        <button
+          onClick={() => setActiveTab("reports")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+            activeTab === "reports" ? "bg-emerald-600" : "hover:bg-slate-800"
+          }`}
+        >
+          <Flag size={20} /> Reports
+        </button>
+        <button
+          onClick={() => setActiveTab("transactions")}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+            activeTab === "transactions" ? "bg-emerald-600" : "hover:bg-slate-800"
+          }`}
+        >
+          <CreditCard size={20} /> Transactions
         </button>
       </nav>
 
