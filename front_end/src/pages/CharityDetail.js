@@ -59,7 +59,6 @@ const CharityDetail = () => {
       
       setSuccessMsg('Cảm ơn bạn đã đóng góp!');
       setDonationForm({ donorName: '', amount: '', message: '' });
-      // Refresh details to show new donation and updated progress
       fetchCharityDetail();
     } catch (err) {
       setDonateError(err.response?.data?.message || err.message);
@@ -105,7 +104,6 @@ const CharityDetail = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Main Content: Info & Donation Form */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white rounded-[2rem] shadow-sm ring-1 ring-slate-200 overflow-hidden">
               <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-8 text-white relative">

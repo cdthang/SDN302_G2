@@ -58,7 +58,6 @@ const Charities = () => {
           )}
         </div>
 
-        {/* Stats Section */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12 transform transition-all hover:-translate-y-1 duration-300">
           <div className="p-8 sm:p-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
