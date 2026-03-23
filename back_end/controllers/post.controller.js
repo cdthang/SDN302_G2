@@ -1,6 +1,5 @@
 import Post from "../models/post.models.js";
 import User from "../models/user.models.js";
-import { classifyPost } from "../services/aiService.service.js";
 
 export const createPost = async (req, res) => {
   try {
