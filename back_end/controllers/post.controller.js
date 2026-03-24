@@ -1,7 +1,6 @@
 import Post from "../models/post.models.js";
 import User from "../models/user.models.js";
 import Category from "../models/category.model.js";
-import { moderatePostWithGemini } from "../services/ai.service.js";
 
 const normalizeTags = (rawTags) => {
   let source = rawTags;
@@ -76,16 +75,6 @@ export const createPost = async (req, res) => {
       finalCategory = selectedCategory.name;
     }
 
-    // Call Gemini AI moderation logic
-    const aiModeration = await moderatePostWithGemini(title, description, price, normalizedTags, finalCategory);
-
-    if (!finalCategory) {
-      finalCategory = aiModeration.category || "Others";
-    }
-
-    const finalTags =
-      normalizedTags.length > 0 ? normalizedTags : aiModeration.tags || [];
-
     const post = new Post({
       title,
       description,
@@ -93,9 +82,9 @@ export const createPost = async (req, res) => {
       userId: req.user.id,
       category: finalCategory,
       categoryId: finalCategoryId,
-      tags: finalTags,
-      status: aiModeration.status || "pending",
-      rejectReason: aiModeration.rejectReason || "",
+      tags: normalizedTags,
+      status: "pending",
+      rejectReason: "",
       price,
       condition,
       brand,
@@ -317,20 +306,8 @@ export const updatePost = async (req, res) => {
       post.images = images;
     }
 
-    if (
-      (title !== undefined || description !== undefined) &&
-      category === undefined &&
-      !hasTagsInput
-    ) {
-      const aiMod = await moderatePostWithGemini(post.title, post.description, post.price, post.tags, post.category);
-      post.category = aiMod.category;
-      post.tags = aiMod.tags;
-      post.status = aiMod.status;
-      post.rejectReason = aiMod.rejectReason;
-    } else {
-      post.status = "pending";
-      post.rejectReason = "";
-    }
+    post.status = "pending";
+    post.rejectReason = "";
     await post.save();
 
     res.json(post);
