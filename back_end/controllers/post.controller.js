@@ -23,7 +23,11 @@ const normalizeTags = (rawTags) => {
   if (!Array.isArray(source)) return [];
 
   const cleaned = source
-    .map((tag) => String(tag || "").trim().toLowerCase())
+    .map((tag) =>
+      String(tag || "")
+        .trim()
+        .toLowerCase(),
+    )
     .filter(Boolean)
     .slice(0, 10);
 
@@ -51,7 +55,9 @@ export const createPost = async (req, res) => {
       tags,
     } = req.body;
 
-    const uploadedImages = (req.files || []).map((file) => file.path.replace(/\\/g, "/"));
+    const uploadedImages = (req.files || []).map((file) =>
+      file.path.replace(/\\/g, "/"),
+    );
     const bodyImages = Array.isArray(req.body.images) ? req.body.images : [];
     const images = uploadedImages.length > 0 ? uploadedImages : bodyImages;
 
@@ -75,7 +81,8 @@ export const createPost = async (req, res) => {
       finalCategory = aiResult.category || "Others";
     }
 
-    const finalTags = normalizedTags.length > 0 ? normalizedTags : (aiResult.tags || []);
+    const finalTags =
+      normalizedTags.length > 0 ? normalizedTags : aiResult.tags || [];
 
     const post = new Post({
       title,
@@ -103,7 +110,6 @@ export const createPost = async (req, res) => {
     await User.findByIdAndUpdate(req.user.id, { $inc: { postCount: 1 } });
 
     res.status(201).json(post);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -134,7 +140,6 @@ export const getPosts = async (req, res) => {
     const posts = await Post.find(query).sort({ createdAt: -1 });
 
     res.json(posts);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -216,7 +221,10 @@ export const getPostsForModeration = async (req, res) => {
 
 export const getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate("userId", "username full_name phone");
+    const post = await Post.findById(req.params.id).populate(
+      "userId",
+      "username full_name phone",
+    );
     if (!post) {
       return res.status(404).json({ message: "Không tìm thấy bài đăng" });
     }
@@ -229,7 +237,6 @@ export const getPostById = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
 };
 export const updatePost = async (req, res) => {
   try {
@@ -241,7 +248,9 @@ export const updatePost = async (req, res) => {
 
     const isOwner = post.userId?.toString() === req.user.id;
     if (!isOwner && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Bạn chỉ có thể cập nhật bài đăng của chính mình" });
+      return res
+        .status(403)
+        .json({ message: "Bạn chỉ có thể cập nhật bài đăng của chính mình" });
     }
 
     const {
@@ -263,7 +272,9 @@ export const updatePost = async (req, res) => {
       quantity,
       tags,
     } = req.body;
-    const uploadedImages = (req.files || []).map((file) => file.path.replace(/\\/g, "/"));
+    const uploadedImages = (req.files || []).map((file) =>
+      file.path.replace(/\\/g, "/"),
+    );
     const hasTagsInput = tags !== undefined;
     const normalizedTags = normalizeTags(tags);
 
@@ -290,7 +301,8 @@ export const updatePost = async (req, res) => {
     if (color !== undefined) post.color = color;
     if (size !== undefined) post.size = size;
     if (locationCity !== undefined) post.locationCity = locationCity;
-    if (locationDistrict !== undefined) post.locationDistrict = locationDistrict;
+    if (locationDistrict !== undefined)
+      post.locationDistrict = locationDistrict;
     if (shippingType !== undefined) post.shippingType = shippingType;
     if (shippingFee !== undefined) post.shippingFee = shippingFee;
     if (isFreeShip !== undefined) post.isFreeShip = isFreeShip;
@@ -302,7 +314,11 @@ export const updatePost = async (req, res) => {
       post.images = images;
     }
 
-    if ((title !== undefined || description !== undefined) && category === undefined && !hasTagsInput) {
+    if (
+      (title !== undefined || description !== undefined) &&
+      category === undefined &&
+      !hasTagsInput
+    ) {
       const aiResult = await classifyPost(post.title, post.description);
       post.category = aiResult.category;
       post.tags = aiResult.tags;
@@ -313,14 +329,12 @@ export const updatePost = async (req, res) => {
     await post.save();
 
     res.json(post);
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 export const deletePost = async (req, res) => {
   try {
-
     const post = await Post.findById(req.params.id);
 
     if (!post) {
@@ -329,7 +343,9 @@ export const deletePost = async (req, res) => {
 
     const isOwner = post.userId?.toString() === req.user.id;
     if (!isOwner && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Bạn chỉ có thể xóa bài đăng của chính mình" });
+      return res
+        .status(403)
+        .json({ message: "Bạn chỉ có thể xóa bài đăng của chính mình" });
     }
 
     await Post.findByIdAndDelete(req.params.id);
@@ -339,19 +355,17 @@ export const deletePost = async (req, res) => {
     }
 
     res.json({ message: "Đã xóa bài đăng" });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 export const approvePost = async (req, res) => {
-
   try {
     const post = await Post.findByIdAndUpdate(
       req.params.id,
       { status: "approved", rejectReason: "" },
-      { new: true }
+      { new: true },
     );
 
     if (!post) {
@@ -362,7 +376,6 @@ export const approvePost = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
 };
 
 export const rejectPost = async (req, res) => {
@@ -372,7 +385,7 @@ export const rejectPost = async (req, res) => {
     const post = await Post.findByIdAndUpdate(
       req.params.id,
       { status: "rejected", rejectReason: reason || "Rejected by admin" },
-      { new: true }
+      { new: true },
     );
 
     if (!post) {
@@ -394,7 +407,11 @@ export const markPostAsSold = async (req, res) => {
 
     const isOwner = post.userId?.toString() === req.user.id;
     if (!isOwner && req.user.role !== "admin") {
-      return res.status(403).json({ message: "Bạn chỉ có thể đánh dấu đã bán cho bài đăng của chính mình" });
+      return res
+        .status(403)
+        .json({
+          message: "Bạn chỉ có thể đánh dấu đã bán cho bài đăng của chính mình",
+        });
     }
 
     post.status = "sold";
@@ -408,10 +425,11 @@ export const markPostAsSold = async (req, res) => {
 
 export const getMySoldPosts = async (req, res) => {
   try {
-    const posts = await Post.find({ userId: req.user.id, status: "sold" }).sort({ updatedAt: -1 });
+    const posts = await Post.find({ userId: req.user.id, status: "sold" }).sort(
+      { updatedAt: -1 },
+    );
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
