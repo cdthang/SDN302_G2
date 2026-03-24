@@ -8,8 +8,6 @@ export const createCharity = async (req, res) => {
     const charity = new Charity({
       title,
       description,
-      shortDescription: description.substring(0, 100),
-      highlightMessage: "Join us to make a difference!",
       goalAmount: goalAmount || 0,
       status: "active",
     });
@@ -133,8 +131,6 @@ export const updateCharity = async (req, res) => {
 
     if (description) {
       charity.description = description;
-      charity.shortDescription = description.substring(0, 100);
-      charity.highlightMessage = "Join us to make a difference!";
     }
 
     if (goalAmount !== undefined) charity.goalAmount = goalAmount;

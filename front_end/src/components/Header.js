@@ -75,19 +75,68 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         <Link to="/" className="flex min-w-0 items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white">
-            R
+            GL
           </div>
-          <div className="min-w-0">
-            <p className="text-2xl font-black leading-none text-slate-900">ReUni</p>
-            <p className="truncate text-sm text-slate-500">Thu mua đồ cũ cho sinh viên</p>
+          <div>
+            <p className="text-lg font-bold">GreenLoop</p>
+            <p className="text-xs text-slate-500">
+              Nền tảng bán, đổi đồ cũ và hỗ trợ các hoạt động từ thiện.
+            </p>
           </div>
         </Link>
 
+        <nav className="hidden items-center gap-8 md:flex">
+          <Link
+            to="/posts"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Marketplace
+          </Link>
+          {user && (
+            <Link
+              to="/my-posts"
+              className="text-sm text-slate-600 hover:text-slate-900"
+            >
+              My Posts
+            </Link>
+          )}
+          {user && (
+            <Link
+              to="/transactions"
+              className="text-sm text-slate-600 hover:text-slate-900"
+            >
+              Transactions
+            </Link>
+          )}
+          <Link
+            to="/charities"
+            className="text-sm text-slate-600 hover:text-slate-900"
+          >
+            Từ thiện
+          </Link>
+          {user && (
+            <Link
+              to="/profile"
+              className="text-sm text-slate-600 hover:text-slate-900"
+            >
+              Profile
+            </Link>
+          )}
+          {user?.role === "admin" && (
+            <Link
+              to="/admin"
+              className="text-sm font-semibold text-slate-900 hover:text-emerald-600"
+            >
+              Admin
+            </Link>
+          )}
+        </nav>
+
         <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm font-semibold text-slate-700 sm:block">
-                {user.full_name || user.username}
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-slate-700 hidden sm:block">
+                Chào, {user.full_name || user.username}
               </span>
               <button
                 onClick={handleLogout}
@@ -98,10 +147,16 @@ export default function Header() {
             </div>
           ) : (
             <>
-              <Link to="/login" className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
+              <Link
+                to="/login"
+                className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block"
+              >
                 Đăng nhập
               </Link>
-              <Link to="/create-post" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">
+              <Link
+                to="/create-post"
+                className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-[1.02]"
+              >
                 Bán đồ ngay
               </Link>
             </>
