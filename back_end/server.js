@@ -15,13 +15,14 @@ import addressRoutes from "./routes/address.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
+import { startAutoModeration } from "./jobs/autoModerate.js";
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3001", "http://127.0.0.1:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true
 }));
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 connectDB();
+startAutoModeration();
 
 app.get("/", (req, res) => {
   res.send("GreenLoop API Running");

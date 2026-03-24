@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const Charities = () => {
   const [charities, setCharities] = useState([]);
@@ -42,9 +43,11 @@ const Charities = () => {
   const isAdmin = user && user.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10">
           <div className="text-center md:text-left">
             <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Chiến dịch từ thiện</h1>
             <p className="mt-2 text-lg text-gray-600">Cùng chung tay tạo ra giá trị tích cực cho cộng đồng.</p>
@@ -130,6 +133,7 @@ const Charities = () => {
             })}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
