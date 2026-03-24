@@ -90,14 +90,14 @@ export default function Header() {
             to="/posts"
             className="text-sm text-slate-600 hover:text-slate-900"
           >
-            Marketplace
+            Chợ đồ cũ
           </Link>
           {user && (
             <Link
               to="/my-posts"
               className="text-sm text-slate-600 hover:text-slate-900"
             >
-              My Posts
+              Bài Đăng Của Tôi
             </Link>
           )}
           {user && (
@@ -105,7 +105,7 @@ export default function Header() {
               to="/transactions"
               className="text-sm text-slate-600 hover:text-slate-900"
             >
-              Transactions
+              Giao Dịch
             </Link>
           )}
           <Link
@@ -119,7 +119,7 @@ export default function Header() {
               to="/profile"
               className="text-sm text-slate-600 hover:text-slate-900"
             >
-              Profile
+              Hồ Sơ
             </Link>
           )}
           {user?.role === "admin" && (

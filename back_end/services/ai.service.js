@@ -9,7 +9,7 @@ export const moderatePostWithGemini = async (title, description, price, tags, ca
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
 Bạn là một kiểm duyệt viên tự động cho nền tảng trao đổi đồ cũ sinh viên GreenLoop.

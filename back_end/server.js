@@ -15,7 +15,7 @@ import addressRoutes from "./routes/address.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import favoriteRoutes from "./routes/favorite.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
-import { startAutoModeration } from "./jobs/autoModerate.js";
+// import { startAutoModeration } from "./jobs/autoModerate.js";
 
 dotenv.config();
 
@@ -30,7 +30,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 connectDB();
-startAutoModeration();
+// startAutoModeration();
 
 app.get("/", (req, res) => {
   res.send("GreenLoop API Running");
