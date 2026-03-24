@@ -1,7 +1,7 @@
 import Post from "../models/post.models.js";
 import User from "../models/user.models.js";
 import Category from "../models/category.model.js";
-import { classifyPost } from "../services/aiService.service.js";
+import { moderatePostWithGemini } from "../services/ai.service.js";
 
 const normalizeTags = (rawTags) => {
   let source = rawTags;
@@ -63,7 +63,6 @@ export const createPost = async (req, res) => {
 
     const normalizedTags = normalizeTags(tags);
 
-    const aiResult = await classifyPost(title, description);
     const normalizedCategoryId = String(categoryId || "").trim();
     let finalCategoryId = null;
     let finalCategory = String(category || "").trim();
@@ -77,12 +76,15 @@ export const createPost = async (req, res) => {
       finalCategory = selectedCategory.name;
     }
 
+    // Call Gemini AI moderation logic
+    const aiModeration = await moderatePostWithGemini(title, description, price, normalizedTags, finalCategory);
+
     if (!finalCategory) {
-      finalCategory = aiResult.category || "Others";
+      finalCategory = aiModeration.category || "Others";
     }
 
     const finalTags =
-      normalizedTags.length > 0 ? normalizedTags : aiResult.tags || [];
+      normalizedTags.length > 0 ? normalizedTags : aiModeration.tags || [];
 
     const post = new Post({
       title,
@@ -92,7 +94,8 @@ export const createPost = async (req, res) => {
       category: finalCategory,
       categoryId: finalCategoryId,
       tags: finalTags,
-      status: "pending",
+      status: aiModeration.status || "pending",
+      rejectReason: aiModeration.rejectReason || "",
       price,
       condition,
       brand,
@@ -319,13 +322,15 @@ export const updatePost = async (req, res) => {
       category === undefined &&
       !hasTagsInput
     ) {
-      const aiResult = await classifyPost(post.title, post.description);
-      post.category = aiResult.category;
-      post.tags = aiResult.tags;
+      const aiMod = await moderatePostWithGemini(post.title, post.description, post.price, post.tags, post.category);
+      post.category = aiMod.category;
+      post.tags = aiMod.tags;
+      post.status = aiMod.status;
+      post.rejectReason = aiMod.rejectReason;
+    } else {
+      post.status = "pending";
+      post.rejectReason = "";
     }
-
-    post.status = "pending";
-    post.rejectReason = "";
     await post.save();
 
     res.json(post);
