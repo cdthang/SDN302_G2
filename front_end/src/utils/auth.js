@@ -9,4 +9,9 @@ export const getStoredUser = () => {
   }
 };
 
+export const getUserId = (user = getStoredUser()) => {
+  if (!user) return "";
+  return user.id || user._id || "";
+};
+
 export const isLoggedIn = () => Boolean(localStorage.getItem("token"));

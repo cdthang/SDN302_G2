@@ -67,7 +67,7 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 py-10">
       <div className="bg-white p-8 rounded-3xl shadow-lg max-w-md w-full ring-1 ring-slate-200">
         <h2 className="text-3xl font-black text-center mb-6">
-          {step === 1 ? "Đăng Ký" : "Xác Nhận Email"}
+          {step === 1 ? "Đăng ký" : "Xác nhận email"}
         </h2>
 
         {step === 1 ? (
@@ -75,7 +75,7 @@ export default function Register() {
             <input
               type="text"
               name="username"
-              placeholder="Username"
+              placeholder="Tên tài khoản"
               required
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-emerald-500"
@@ -124,7 +124,7 @@ export default function Register() {
               type="submit"
               className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition"
             >
-              Đăng Ký
+              Đăng ký
             </button>
           </form>
         ) : (
@@ -144,7 +144,7 @@ export default function Register() {
               type="submit"
               className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:bg-emerald-700 transition"
             >
-              Xác Nhận
+              Xác nhận
             </button>
             <button
               type="button"

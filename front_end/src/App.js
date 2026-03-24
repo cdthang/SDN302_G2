@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Posts from "./pages/Posts";
+import PostDetail from "./pages/PostDetail";
 import CreatePost from "./pages/CreatePost";
 import StudentUsedGoodsHomepage from "./pages/HomePage";
 import Register from "./pages/Register";
@@ -10,6 +11,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import MyPosts from "./pages/MyPosts";
 import Profile from "./pages/Profile";
 import Transactions from "./pages/Transactions";
+import Cart from "./pages/Cart";
+import Addresses from "./pages/Addresses";
+import Orders from "./pages/Orders";
+import Favorites from "./pages/Favorites";
+import Reviews from "./pages/Reviews";
 
 import Charities from "./pages/Charities";
 import CreateCharity from "./pages/CreateCharity";
@@ -25,6 +31,7 @@ function App() {
         <Route path="/" element={<StudentUsedGoodsHomepage />} />
 
         <Route path="/posts" element={<Posts />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
         <Route
           path="/create-post"
           element={
@@ -54,6 +61,46 @@ function App() {
           element={
             <UserRoute>
               <Transactions />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <UserRoute>
+              <Cart />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/addresses"
+          element={
+            <UserRoute>
+              <Addresses />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <UserRoute>
+              <Orders />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <UserRoute>
+              <Favorites />
+            </UserRoute>
+          }
+        />
+        <Route
+          path="/reviews"
+          element={
+            <UserRoute>
+              <Reviews />
             </UserRoute>
           }
         />

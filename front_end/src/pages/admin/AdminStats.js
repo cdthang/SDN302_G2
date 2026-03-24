@@ -19,7 +19,7 @@ export default function AdminStats() {
       const res = await api.get("/admin/stats", getAuthConfig());
       setStats(res.data);
     } catch (error) {
-      alert(error.response?.data?.message || "Khong the tai thong ke");
+      alert(error.response?.data?.message || "Không thể tải thống kê");
     } finally {
       setLoading(false);
     }
@@ -30,37 +30,37 @@ export default function AdminStats() {
   }, []);
 
   if (loading) {
-    return <div className="rounded-xl bg-white p-4">Dang tai thong ke...</div>;
+    return <div className="rounded-xl bg-white p-4">Đang tải thống kê...</div>;
   }
 
   if (!stats) {
-    return <div className="rounded-xl bg-white p-4">Khong co du lieu thong ke.</div>;
+    return <div className="rounded-xl bg-white p-4">Không có dữ liệu thống kê.</div>;
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-black text-slate-900">Admin Overview</h2>
+      <h2 className="text-2xl font-black text-slate-900">Tổng quan quản trị</h2>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card title="Total Users" value={stats.users?.totalUsers || 0} hint={`Active ${stats.users?.activeUsers || 0} • Banned ${stats.users?.bannedUsers || 0}`} />
-        <Card title="Total Posts" value={stats.posts?.totalPosts || 0} hint={`Pending ${stats.posts?.pendingPosts || 0} • Approved ${stats.posts?.approvedPosts || 0}`} />
-        <Card title="Pending Reports" value={stats.reports?.pendingReports || 0} hint={`Total ${stats.reports?.totalReports || 0}`} />
-        <Card title="Transactions" value={stats.transactions?.totalTransactions || 0} hint={`Commission ${Number(stats.transactions?.totalCommission || 0).toLocaleString()} VND`} />
+        <Card title="Tổng người dùng" value={stats.users?.totalUsers || 0} hint={`Hoạt động ${stats.users?.activeUsers || 0} • Bị khóa ${stats.users?.bannedUsers || 0}`} />
+        <Card title="Tổng bài đăng" value={stats.posts?.totalPosts || 0} hint={`Chờ duyệt ${stats.posts?.pendingPosts || 0} • Đã duyệt ${stats.posts?.approvedPosts || 0}`} />
+        <Card title="Báo cáo chờ xử lý" value={stats.reports?.pendingReports || 0} hint={`Tổng ${stats.reports?.totalReports || 0}`} />
+        <Card title="Giao dịch" value={stats.transactions?.totalTransactions || 0} hint={`Hoa hồng ${Number(stats.transactions?.totalCommission || 0).toLocaleString()} VND`} />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-bold text-slate-900">Marketplace Snapshot</h3>
+        <h3 className="text-lg font-bold text-slate-900">Tình hình chợ đồ cũ</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-xs text-slate-500">Pending</p>
+            <p className="text-xs text-slate-500">Chờ duyệt</p>
             <p className="text-2xl font-black">{stats.posts?.pendingPosts || 0}</p>
           </div>
           <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-xs text-slate-500">Approved</p>
+            <p className="text-xs text-slate-500">Đã duyệt</p>
             <p className="text-2xl font-black">{stats.posts?.approvedPosts || 0}</p>
           </div>
           <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-xs text-slate-500">Sold</p>
+            <p className="text-xs text-slate-500">Đã bán</p>
             <p className="text-2xl font-black">{stats.posts?.soldPosts || 0}</p>
           </div>
         </div>

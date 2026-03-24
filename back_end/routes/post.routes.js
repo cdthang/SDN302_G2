@@ -2,6 +2,7 @@ import express from "express";
 import {
 	createPost,
 	getPosts,
+	getPostCategories,
 	getMyPosts,
 	getPostsForModeration,
 	getPostById,
@@ -28,6 +29,7 @@ import {
 const router = express.Router();
 router.post("/", authMiddleware, upload.array("images", 5), validateBody(createPostSchema), createPost);
 router.get("/", validateQuery(postsPublicQuerySchema), getPosts);
+router.get("/categories", getPostCategories);
 router.get("/me", authMiddleware, validateQuery(myPostsQuerySchema), getMyPosts);
 router.get("/me/sold", authMiddleware, getMySoldPosts);
 router.get("/moderation", authMiddleware, isAdmin, validateQuery(moderationQuerySchema), getPostsForModeration);
