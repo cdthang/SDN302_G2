@@ -3,21 +3,38 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../components/Header";
+import { toVietnameseDisplay } from "../utils/vietnameseText";
 
 export default function StudentUsedGoodsHomepage() {
   const navigate = useNavigate();
 
-  const categories = [
-    { name: "Sách & giáo trình", icon: "📚" },
-    { name: "Laptop & phụ kiện", icon: "💻" },
-    { name: "Đồ điện tử", icon: "🎧" },
-    { name: "Nội thất phòng trọ", icon: "🪑" },
-    { name: "Xe đạp & đi lại", icon: "🚲" },
-    { name: "Đồ dùng học tập", icon: "📝" },
-  ];
+  const categoryIconMap = {
+    sach: "📚",
+    "van hoc": "📖",
+    laptop: "💻",
+    "thiet bi dien tu": "🎧",
+    "đồ gia dụng": "🏠",
+    "do gia dung": "🏠",
+    "nội thất": "🪑",
+    "noi that": "🪑",
+    "xe đạp": "🚲",
+    "xe dap": "🚲",
+    "đồ học tập": "📝",
+    "do hoc tap": "📝",
+    "thời trang": "👕",
+    "thoi trang": "👕",
+    khac: "🧩",
+    khác: "🧩",
+  };
+
+  const getCategoryIcon = (name) => {
+    const key = String(name || "").toLowerCase().trim();
+    return categoryIconMap[key] || "📦";
+  };
 
   const [posts, setPosts] = useState([]);
   const [charities, setCharities] = useState([]);
+  const [popularCategories, setPopularCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
@@ -61,9 +78,10 @@ export default function StudentUsedGoodsHomepage() {
         setIsLoading(true);
         setLoadError("");
 
-        const [postsResponse, charitiesResponse] = await Promise.all([
+        const [postsResponse, charitiesResponse, categoriesResponse] = await Promise.all([
           axios.get("/api/posts"),
           axios.get("/api/charities"),
+          axios.get("/api/posts/categories"),
         ]);
 
         if (!isMounted) {
@@ -75,6 +93,11 @@ export default function StudentUsedGoodsHomepage() {
           ? charitiesResponse.data
           : [];
         setCharities(charitiesData.slice(0, 3));
+
+        const categoryData = Array.isArray(categoriesResponse.data)
+          ? categoriesResponse.data
+          : [];
+        setPopularCategories(categoryData.slice(0, 6));
       } catch (error) {
         if (!isMounted) {
           return;
@@ -100,6 +123,14 @@ export default function StudentUsedGoodsHomepage() {
 
   const handleClosePost = () => {
     setSelectedPost(null);
+  };
+
+  const handleOpenCategory = (categoryName) => {
+    const params = new URLSearchParams({
+      category: categoryName,
+      status: "available",
+    });
+    navigate(`/posts?${params.toString()}`);
   };
 
   return (
@@ -139,7 +170,7 @@ export default function StudentUsedGoodsHomepage() {
 
             <div className="mt-8 grid max-w-lg grid-cols-3 gap-4">
               <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
-                <p className="text-2xl font-black">15.000+</p>
+                <p className="text-2xl font-black">100+</p>
                 <p className="mt-1 text-sm text-slate-500">món đồ đã thu mua</p>
               </div>
               <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
@@ -263,27 +294,45 @@ export default function StudentUsedGoodsHomepage() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Danh mục phổ biến</p>
             <h2 className="mt-2 text-3xl font-black md:text-4xl">Mua, bán và đổi đồ theo danh mục</h2>
           </div>
-          <button className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium md:block">
+          <button
+            onClick={() => navigate("/cart")}
+            className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 md:block"
+          >
             Xem danh mục
           </button>
         </div>
 
+        <button
+          onClick={() => navigate("/cart")}
+          className="mb-4 w-full rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-100 md:hidden"
+        >
+          Xem danh mục
+        </button>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((item) => (
-            <div
+          {popularCategories.map((item) => (
+            <button
+              type="button"
+              onClick={() => handleOpenCategory(item.name)}
               key={item.name}
               className="group rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                {item.icon}
+                {getCategoryIcon(item.name)}
               </div>
-              <h3 className="mt-5 text-xl font-bold">{item.name}</h3>
+              <h3 className="mt-5 text-left text-xl font-bold">{toVietnameseDisplay(item.name)}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Định giá minh bạch, hỗ trợ đổi đồ hoặc bán nhanh ngay trong ngày.
+                Hiện có {Number(item.count || 0)} món đồ trong danh mục này. Nhấn để xem danh sách phù hợp.
               </p>
-              <div className="mt-5 text-sm font-semibold text-emerald-600">Tìm đồ phù hợp →</div>
-            </div>
+              <div className="mt-5 text-left text-sm font-semibold text-emerald-600">Tìm đồ phù hợp →</div>
+            </button>
           ))}
+
+          {!isLoading && popularCategories.length === 0 && (
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+              Chưa có danh mục phổ biến để hiển thị.
+            </div>
+          )}
         </div>
       </section>
 

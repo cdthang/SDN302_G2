@@ -40,7 +40,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="bg-white p-8 rounded-3xl shadow-lg max-w-md w-full ring-1 ring-slate-200">
-        <h2 className="text-3xl font-black text-center mb-6">Quên Mật Khẩu</h2>
+        <h2 className="text-3xl font-black text-center mb-6">Quên mật khẩu</h2>
 
         {step === 1 ? (
           <form onSubmit={handleSendCode} className="space-y-4">
@@ -55,7 +55,7 @@ export default function ForgotPassword() {
               type="submit"
               className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition"
             >
-              Gửi Mã Xác Nhận
+              Gửi mã xác nhận
             </button>
           </form>
         ) : (
@@ -79,7 +79,7 @@ export default function ForgotPassword() {
               type="submit"
               className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:bg-emerald-700 transition"
             >
-              Xác Nhận Đổi Mật Khẩu
+              Xác nhận đổi mật khẩu
             </button>
           </form>
         )}

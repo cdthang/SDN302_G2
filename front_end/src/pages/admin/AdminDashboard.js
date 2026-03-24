@@ -6,6 +6,8 @@ import AdminStats from "./AdminStats";
 import UserManagement from "./UserManagement";
 import ReportManagement from "./ReportManagement";
 import TransactionManagement from "./TransactionManagement";
+import OrderManagement from "./OrderManagement";
+import CategoryManagement from "./CategoryManagement";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -23,6 +25,8 @@ export default function AdminDashboard() {
         {activeTab === "users" && <UserManagement />}
         {activeTab === "reports" && <ReportManagement />}
         {activeTab === "transactions" && <TransactionManagement />}
+        {activeTab === "orders" && <OrderManagement />}
+        {activeTab === "categories" && <CategoryManagement />}
       </main>
     </div>
   );

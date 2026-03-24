@@ -39,12 +39,12 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="bg-white p-8 rounded-3xl shadow-lg max-w-md w-full ring-1 ring-slate-200">
-        <h2 className="text-3xl font-black text-center mb-6">Đăng Nhập</h2>
+        <h2 className="text-3xl font-black text-center mb-6">Đăng nhập</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Email của bạn"
             required
             onChange={handleChange}
             className="w-full px-4 py-3 rounded-xl border border-slate-300 outline-none focus:ring-2 focus:ring-emerald-500"
@@ -61,7 +61,7 @@ export default function Login() {
             type="submit"
             className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition"
           >
-            Đăng Nhập
+            Đăng nhập
           </button>
         </form>
         <div className="flex justify-between items-center mt-4 text-sm">
@@ -75,7 +75,7 @@ export default function Login() {
             to="/register"
             className="text-emerald-600 font-bold hover:underline"
           >
-            Tạo mới
+            Tạo tài khoản
           </Link>
         </div>
       </div>

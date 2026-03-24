@@ -13,6 +13,13 @@ const toImageUrl = (images) => {
   return `/${normalized}`;
 };
 
+const statusLabels = {
+  pending: "Chờ duyệt",
+  approved: "Đã duyệt",
+  rejected: "Bị từ chối",
+  sold: "Đã bán",
+};
+
 export default function PostManagement() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,16 +85,16 @@ export default function PostManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold text-slate-900">Post Moderation</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Kiểm duyệt bài đăng</h2>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
         >
-          <option value="pending">pending</option>
-          <option value="approved">approved</option>
-          <option value="rejected">rejected</option>
-          <option value="sold">sold</option>
+          <option value="pending">chờ duyệt</option>
+          <option value="approved">đã duyệt</option>
+          <option value="rejected">bị từ chối</option>
+          <option value="sold">đã bán</option>
         </select>
       </div>
       <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
@@ -124,7 +131,7 @@ export default function PostManagement() {
                         : "bg-slate-100 text-slate-600"
                     }`}
                   >
-                    {p.status}
+                    {statusLabels[p.status] || p.status}
                   </span>
                 </div>
 
