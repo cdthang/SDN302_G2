@@ -3,7 +3,7 @@ import Post from "../models/post.models.js";
 
 export const createReport = async (req, res) => {
   try {
-    const { postId, reason, details } = req.body;
+    const { postId, reason, details, reportType } = req.body;
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -25,6 +25,7 @@ export const createReport = async (req, res) => {
       reporterId: req.user.id,
       reason,
       details,
+      reportType: reportType || "other",
     });
 
     res.status(201).json(report);
@@ -54,7 +55,7 @@ export const getReports = async (req, res) => {
 export const reviewReport = async (req, res) => {
   try {
     const { id } = req.params;
-    const { action, adminNote } = req.body;
+    const { action, adminNote, resolutionAction } = req.body;
 
     if (!["resolved", "dismissed"].includes(action)) {
       return res.status(400).json({ message: "Hành động không hợp lệ" });
@@ -66,6 +67,11 @@ export const reviewReport = async (req, res) => {
         status: action,
         adminNote: adminNote || "",
         reviewedBy: req.user.id,
+        resolvedAt: action === "resolved" ? new Date() : null,
+        resolutionAction:
+          action === "dismissed"
+            ? "dismissed"
+            : resolutionAction || "hidden",
       },
       { new: true }
     );

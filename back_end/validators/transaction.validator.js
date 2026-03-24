@@ -22,3 +22,7 @@ export const transactionsQuerySchema = Joi.object({
   type: Joi.string().valid("sale", "donation").optional(),
   status: Joi.string().valid("pending", "paid", "failed", "refunded").optional(),
 });
+
+export const transactionIdParamsSchema = Joi.object({
+  id: objectIdSchema,
+});

@@ -48,6 +48,12 @@ const transactionSchema = new mongoose.Schema(
       ref: "Charity",
       required: false,
     },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      required: false,
+      default: null,
+    },
     status: {
       type: String,
       enum: ["pending", "paid", "failed", "refunded"],
@@ -60,6 +66,31 @@ const transactionSchema = new mongoose.Schema(
     metadata: {
       type: Object,
       default: {},
+    },
+    bankTransferRef: {
+      type: String,
+      default: "",
+    },
+    paymentProofImage: {
+      type: String,
+      default: "",
+    },
+    paidAt: {
+      type: Date,
+      default: null,
+    },
+    confirmedAt: {
+      type: Date,
+      default: null,
+    },
+    confirmedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    failReason: {
+      type: String,
+      default: "",
     },
   },
   { timestamps: true }

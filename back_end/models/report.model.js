@@ -17,6 +17,11 @@ const reportSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    reportType: {
+      type: String,
+      enum: ["spam", "fake", "prohibited", "scam", "other"],
+      default: "other",
+    },
     details: {
       type: String,
       default: "",
@@ -34,6 +39,15 @@ const reportSchema = new mongoose.Schema(
     adminNote: {
       type: String,
       default: "",
+    },
+    resolvedAt: {
+      type: Date,
+      default: null,
+    },
+    resolutionAction: {
+      type: String,
+      enum: ["none", "hidden", "warning", "banSeller", "dismissed"],
+      default: "none",
     },
   },
   { timestamps: true }

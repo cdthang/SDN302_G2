@@ -38,6 +38,14 @@ export const createTransaction = async (req, res) => {
         return res.status(404).json({ message: "Không tìm thấy bài đăng" });
       }
 
+      if (post.status !== "approved") {
+        return res.status(400).json({ message: "Bài đăng không ở trạng thái có thể mua" });
+      }
+
+      if (String(post.userId) === String(req.user?.id)) {
+        return res.status(400).json({ message: "Bạn không thể mua bài đăng của chính mình" });
+      }
+
       sellerId = post.userId;
       post.status = "sold";
       await post.save();
@@ -60,6 +68,8 @@ export const createTransaction = async (req, res) => {
     const commissionAmount = (numericAmount * commissionRate) / 100;
     const netAmount = numericAmount - commissionAmount;
 
+    const txStatus = paymentMethod === "manual" ? "pending" : "paid";
+
     const transaction = await Transaction.create({
       type,
       amount: numericAmount,
@@ -72,10 +82,46 @@ export const createTransaction = async (req, res) => {
       charityId: charityId || null,
       paymentMethod,
       metadata,
-      status: "paid",
+      status: txStatus,
     });
 
-    res.status(201).json(transaction);
+    res.status(201).json({
+      ...transaction.toObject(),
+      message:
+        txStatus === "pending"
+          ? "Đã tạo giao dịch thủ công. Vui lòng chuyển khoản và chờ xác nhận."
+          : "Đã tạo giao dịch thành công",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const confirmManualTransaction = async (req, res) => {
+  try {
+    const tx = await Transaction.findById(req.params.id);
+    if (!tx) {
+      return res.status(404).json({ message: "Không tìm thấy giao dịch" });
+    }
+
+    if (tx.type !== "sale") {
+      return res.status(400).json({ message: "Chỉ hỗ trợ xác nhận thủ công cho giao dịch mua bán" });
+    }
+
+    if (tx.status !== "pending") {
+      return res.status(400).json({ message: "Giao dịch không ở trạng thái chờ xác nhận" });
+    }
+
+    const isSeller = tx.sellerId && String(tx.sellerId) === String(req.user.id);
+    const isAdmin = req.user.role === "admin";
+    if (!isSeller && !isAdmin) {
+      return res.status(403).json({ message: "Bạn không có quyền xác nhận giao dịch này" });
+    }
+
+    tx.status = "paid";
+    await tx.save();
+
+    res.json({ message: "Đã xác nhận giao dịch thủ công", transaction: tx });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -88,6 +134,8 @@ export const getMyTransactions = async (req, res) => {
     })
       .populate("postId", "title")
       .populate("charityId", "title")
+      .populate("payerId", "username full_name email")
+      .populate("sellerId", "username full_name email")
       .sort({ createdAt: -1 });
 
     res.json(transactions);
