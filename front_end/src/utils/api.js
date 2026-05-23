@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "/api",
+  // Vite dùng import.meta.env thay cho process.env
+  // Tên biến đổi từ REACT_APP_ → VITE_
+  baseURL: import.meta.env.VITE_API_URL || "/api",
 });
 
 export const getAuthConfig = () => {
