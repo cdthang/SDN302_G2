@@ -55,6 +55,16 @@ export default function StudentUsedGoodsHomepage() {
   const fallbackPostImage =
     "https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80";
 
+  // BUG FIX: backend lưu ảnh dạng "uploads/filename.jpg" (không có leading slash)
+  // Nếu dùng trực tiếp vào src="" thì browser hiểu là relative URL → sai
+  // Hàm này chuẩn hoá về root-relative "/uploads/filename.jpg"
+  const toImageUrl = (rawPath) => {
+    if (!rawPath) return fallbackPostImage;
+    if (rawPath.startsWith("http://") || rawPath.startsWith("https://")) return rawPath;
+    const normalized = rawPath.replace(/\\/g, "/").replace(/^\/+/, "");
+    return `/${normalized}`;
+  };
+
   const steps = [
     {
       title: "Đăng món đồ",
@@ -264,7 +274,7 @@ export default function StudentUsedGoodsHomepage() {
                   >
                     <div className="min-w-[260px] overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-lg sm:min-w-[320px] md:min-w-[360px]">
                       <img
-                        src={post.images?.[0] || fallbackPostImage}
+                        src={toImageUrl(post.images?.[0])}
                         alt={post.title}
                         className="h-56 w-full object-cover"
                       />
@@ -470,7 +480,7 @@ export default function StudentUsedGoodsHomepage() {
             </div>
             <div className="mt-6 grid gap-6 md:grid-cols-[1.2fr_1fr]">
               <img
-                src={selectedPost.images?.[0] || fallbackPostImage}
+                src={toImageUrl(selectedPost.images?.[0])}
                 alt={selectedPost.title}
                 className="h-64 w-full rounded-2xl object-cover"
               />
