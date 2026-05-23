@@ -16,8 +16,8 @@ const Charities = () => {
   const fetchData = async () => {
     try {
       const [statsRes, charitiesRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/charities/stats'),
-        axios.get('http://localhost:8000/api/charities')
+        axios.get('/api/charities/stats'),
+        axios.get('/api/charities')
       ]);
       setStats(statsRes.data);
       setCharities(charitiesRes.data);

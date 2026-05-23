@@ -29,7 +29,7 @@ const CharityDetail = () => {
   const fetchCharityDetail = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:8000/api/charities/${id}`);
+      const res = await axios.get(`/api/charities/${id}`);
       setData(res.data);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
@@ -55,7 +55,7 @@ const CharityDetail = () => {
     }
 
     try {
-      const res = await axios.post(`http://localhost:8000/api/charities/${id}/donate`, donationForm);
+      const res = await axios.post(`/api/charities/${id}/donate`, donationForm);
       
       setSuccessMsg('Cảm ơn bạn đã đóng góp!');
       setDonationForm({ donorName: '', amount: '', message: '' });

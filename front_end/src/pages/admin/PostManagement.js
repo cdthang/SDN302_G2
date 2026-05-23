@@ -31,7 +31,7 @@ export default function PostManagement() {
   const fetchPosts = async (status = statusFilter) => {
     try {
       const params = status ? { status } : {};
-      const res = await axios.get("http://localhost:8000/api/posts/moderation", {
+      const res = await axios.get("/api/posts/moderation", {
         headers: { Authorization: `Bearer ${token}` },
         params,
       });
@@ -50,7 +50,7 @@ export default function PostManagement() {
 
   const handleApprove = async (id) => {
     try {
-      await axios.patch(`http://localhost:8000/api/posts/${id}/approve`, {}, config);
+      await axios.patch(`/api/posts/${id}/approve`, {}, config);
       fetchPosts(statusFilter);
     } catch (err) {
       alert("Lỗi khi duyệt bài");
@@ -60,7 +60,7 @@ export default function PostManagement() {
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài đăng này?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/posts/${id}`, config);
+        await axios.delete(`/api/posts/${id}`, config);
         fetchPosts(statusFilter);
       } catch (err) {
         alert("Lỗi khi xóa bài");
@@ -73,7 +73,7 @@ export default function PostManagement() {
     if (reason === null) return;
 
     try {
-      await axios.patch(`http://localhost:8000/api/posts/${id}/reject`, { reason }, config);
+      await axios.patch(`/api/posts/${id}/reject`, { reason }, config);
       fetchPosts(statusFilter);
     } catch (err) {
       alert("Lỗi khi reject bài");

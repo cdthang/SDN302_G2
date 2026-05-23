@@ -22,7 +22,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/auth/register", formData);
+      await axios.post("/api/auth/register", formData);
       alert("Mã xác nhận đã được gửi về email!");
       setStep(2);
     } catch (error) {
@@ -33,7 +33,7 @@ export default function Register() {
   const handleVerify = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/auth/verify-account", {
+      await axios.post("/api/auth/verify-account", {
         email: formData.email,
         otp,
       });
@@ -52,7 +52,7 @@ export default function Register() {
 
     setResendingOtp(true);
     try {
-      await axios.post("http://localhost:8000/api/auth/resend-verify-otp", {
+      await axios.post("/api/auth/resend-verify-otp", {
         email: formData.email,
       });
       alert("Đã gửi lại OTP. Vui lòng kiểm tra email.");

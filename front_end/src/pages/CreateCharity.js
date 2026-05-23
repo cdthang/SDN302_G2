@@ -36,7 +36,7 @@ const CreateCharity = () => {
 
       const token = localStorage.getItem('token');
       
-      const response = await axios.post('http://localhost:8000/api/charities', payload, {
+      const response = await axios.post('/api/charities', payload, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

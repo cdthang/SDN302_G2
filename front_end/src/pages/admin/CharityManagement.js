@@ -22,7 +22,7 @@ export default function CharityManagement() {
 
   const fetchCharities = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/charities");
+      const res = await axios.get("/api/charities");
       setCharities(res.data);
     } catch (err) {
       console.error("Error fetching charities", err);
@@ -33,9 +33,9 @@ export default function CharityManagement() {
     e.preventDefault();
     try {
       if (editingCharity) {
-        await axios.put(`http://localhost:8000/api/charities/${editingCharity._id}`, form, config);
+        await axios.put(`/api/charities/${editingCharity._id}`, form, config);
       } else {
-        await axios.post("http://localhost:8000/api/charities", form, config);
+        await axios.post("/api/charities", form, config);
       }
       setShowModal(false);
       setEditingCharity(null);
@@ -49,7 +49,7 @@ export default function CharityManagement() {
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa chiến dịch này?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/charities/${id}`, config);
+        await axios.delete(`/api/charities/${id}`, config);
         fetchCharities();
       } catch (err) {
         alert("Lỗi khi xóa");
